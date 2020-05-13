@@ -1,0 +1,17 @@
+{
+  "name": "kaholo-plugin-azure-resource-management",
+  "version": "1.0.0",
+  "description": "Kaholo plugin for Azure ARM Template",
+  "main": "app.js",
+  "dependencies": {
+    "@azure/arm-resources": "^2.1.0",
+    "@azure/ms-rest-nodeauth": "^3.0.3",
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ilan Yaniv",
+  "license": "ISC"
+}
