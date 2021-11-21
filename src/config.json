@@ -1,70 +1,401 @@
 {
-    "name": "AzureResourceManagement",
-    "type": "executer",
-    "main": "app.js",
-    "execProgram": "node",
-    "exposeRoute": false,
-    "imgUrl": "logo.png",
-    "version": "1.0.0",
-    "settings" : [
-      {
-        "name": "clientId",
-        "viewName": "Client or App ID",
-        "type": "string"
-      },
-      {
-        "name": "subscriptionId",
-        "viewName": "Subscription ID",
-        "type": "string"
-      },
-      {
-        "name": "tenant",
-        "viewName": "Tenant",
-        "type": "string"
-      },
-      {
-        "name": "secret",
-        "viewName": "Secret",
-        "type": "vault"
-      }
-    ],
-    "methods": [
+  "name": "AzureResourceManagement",
+  "type": "executer",
+  "main": "app.js",
+  "execProgram": "node",
+  "exposeRoute": false,
+  "imgUrl": "logo.png",
+  "version": "2.0.0",
+  "description": "Kaholo plugin for integration with Azure Resource Management API.",
+  "category": "CLOUDS",
+  "settings": [
+    {
+      "name": "clientId",
+      "viewName": "Client or App ID",
+      "type": "string"
+    },
+    {
+      "name": "secret",
+      "viewName": "Secret or Password",
+      "type": "vault"
+    },
+    {
+      "name": "domain",
+      "viewName": "Domain or Tenant ID",
+      "type": "string"
+    },
+    {
+      "name": "subscriptionId",
+      "viewName": "Subscription ID",
+      "type": "string"
+    }
+  ],
+  "methods": [
+    {
+      "name": "createResourceGroup",
+      "viewName": "Create Resource Group",
+      "params": [
         {
-          "name": "createResourceGroup",
-          "viewName": "Create Resource Group",
-          "params": [
-            {
-              "name": "resourceGroupName",
-              "viewName": "Resource group name",
-              "type": "string"
-            },
-            {
-                "name": "parameters",
-                "viewName": "Parameters JSON",
-                "type": "string"
-            }
-           ]
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
         },
         {
-            "name": "createStorageGroup",
-            "viewName": "Create Storage Group",
-            "params": [
-              {
-                "name": "resourceGroupName",
-                "viewName": "Resource group name",
-                "type": "string"
-              },
-              {
-                "name": "storageAccountName",
-                "viewName": "Storage account name",
-                "type": "string"
-              },
-              {
-                  "name": "parameters",
-                  "viewName": "Parameters JSON",
-                  "type": "string"
-              }
-             ]
-          }
-    ]
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "viewName": "Name",
+          "type": "string",
+          "description": "The name to assign to the new resource group. Only allows alphanumeric characters, periods, underscores, hyphens and parenthesis and cannot end in a period.",
+          "placeholder": "TestRG"
+        },
+        {
+          "name": "location",
+          "viewName": "Region",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listLocationsAuto",
+          "description": "The Azure region to create the new resource group inside."
+        },
+        {
+          "name": "tags",
+          "viewName": "Tags",
+          "type": "text",
+          "description": "Assign the tags specified to the new resource group. Tags must follow the format tagName=tagVal. To enter multiple tags seperate each with a new line.",
+          "placeholder": "tag1=true\ntag2=Test"
+        }
+      ]
+    },
+    {
+      "name": "createStorageAccount",
+      "viewName": "Create Storage Account",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "resourceGroup",
+          "viewName": "Resource Group",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listResourceGroupsAuto",
+          "description": "The Azure resource group the storage account will belong to."
+        },
+        {
+          "name": "name",
+          "viewName": "Name",
+          "type": "string",
+          "description": "The name to assign to the new storage account. must be between 3 and 24 characters in length and may contain numbers and lowercase letters only.",
+          "placeholder": "MyAccount"
+        },
+        {
+          "name": "kind",
+          "viewName": "Storage Kind",
+          "type": "options",
+          "description": "The kind of storage to use in this account. The default is Storage V2. All other are optionsa are considered 'Premium' and cost more money.",
+          "placeholder": "Storage V2",
+          "options": [
+            {
+              "id": "StorageV2",
+              "name": "Storage V2"
+            },
+            {
+              "id": "BlobStorage",
+              "name": "Blob Storage"
+            },
+            {
+              "id": "BlockBlobStorage",
+              "name": "Block Blob Storage"
+            },
+            {
+              "id": "FileStorage",
+              "name": "File Storage"
+            }
+          ]
+        },
+        {
+          "name": "accessTier",
+          "viewName": "Blob Storage Access Tier",
+          "type": "options",
+          "description": "Required for storage accounts where kind = BlobStorage. The access tier used for billing. Possible values include: 'Hot', 'Cool'",
+          "placeholder": "Storage V2",
+          "options": [
+            {
+              "id": "Hot",
+              "name": "Hot"
+            },
+            {
+              "id": "Cool",
+              "name": "Cool"
+            }
+          ]
+        },
+        {
+          "name": "location",
+          "viewName": "Region",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listLocationsAuto",
+          "description": "The Azure region to create the new storage account inside."
+        },
+        {
+          "name": "sku",
+          "viewName": "Redunency Type(SKU)",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listSkusAuto",
+          "description": "The Azure region to create the new resource group inside."
+        },
+        {
+          "name": "tags",
+          "viewName": "Tags",
+          "type": "text",
+          "description": "Assign the tags specified to the new storage account. Tags must follow the format tagName=tagVal. To enter multiple tags seperate each with a new line.",
+          "placeholder": "tag1=true\ntag2=Test"
+        }
+      ]
+    },
+    {
+      "name": "getResourceGroup",
+      "viewName": "Get Resource Group",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "resourceGroup",
+          "viewName": "Resource Group",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listResourceGroupsAuto",
+          "description": "The Azure resource group to return information about."
+        }
+      ]
+    },
+    {
+      "name": "deleteResourceGroup",
+      "viewName": "Delete Resource Group",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "resourceGroup",
+          "viewName": "Resource Group",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listResourceGroupsAuto",
+          "description": "The Azure resource group to delete."
+        }
+      ]
+    },
+    {
+      "name": "getStorageAccount",
+      "viewName": "Get Storage Account",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "resourceGroup",
+          "viewName": "Resource Group",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listResourceGroupsAuto",
+          "description": "The Azure resource group the storage account belongs to."
+        },
+        {
+          "name": "storageAccount",
+          "viewName": "Storage Account",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listStorageAccountsAuto",
+          "description": "The Azure storage account to return information about."
+        }
+      ]
+    },
+    {
+      "name": "deleteStorageAccount",
+      "viewName": "Delete Storage Account",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "resourceGroup",
+          "viewName": "Resource Group",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listResourceGroupsAuto",
+          "description": "The Azure resource group the storage account belongs to."
+        },
+        {
+          "name": "storageAccount",
+          "viewName": "Storage Account",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listStorageAccountsAuto",
+          "description": "The Azure storage account to delete."
+        }
+      ]
+    },
+    {
+      "name": "listResourceGroups",
+      "viewName": "List Resource Groups",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "listStorageAccounts",
+      "viewName": "List Storage Accounts",
+      "params": [
+        {
+          "name": "clientId",
+          "viewName": "Client or App ID",
+          "type": "string"
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret or Password",
+          "type": "vault"
+        },
+        {
+          "name": "domain",
+          "viewName": "Domain or Tenant ID",
+          "type": "string"
+        },
+        {
+          "name": "subscriptionId",
+          "viewName": "Subscription ID",
+          "type": "string"
+        },
+        {
+          "name": "resourceGroup",
+          "viewName": "Resource Group",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listResourceGroupsAuto",
+          "description": "If specified only list storage accounts which belongs the specified resource group."
+        }
+      ]
+    }
+  ]
 }

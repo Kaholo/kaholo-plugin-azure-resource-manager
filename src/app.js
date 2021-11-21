@@ -1,48 +1,86 @@
-const msRest = require('@azure/ms-rest-nodeauth');
-const resourceManagement = require("@azure/arm-resources");
+const parsers = require("./parsers");
 
-/**
- * Internal function for handling authentication and generation of website managmnet client
- * @param {*} action 
- * @param {*} settings 
- * @returns Promise<WebSiteManagementClient>
- */
+const AzureResourceManagementService = require('./azure.arm.service');
 
-function _getWebSiteManagementClient(settings) {
-	/**
-	 * Create credentials from the clientId, secret and domain
-	 */
-
-
-    return msRest.loginWithServicePrincipalSecret(
-        settings.clientId, settings.secret, settings.tenant).then(credentials => {
-			/**
-			 * Create new Resource Mamagement client using the credentials and subscription ID
-			 * And returns the new resource mamagement client
-			 */
-            return new resourceManagement.ResourceManagementClient(credentials, (settings.subscriptionId));
-        });
+async function createResourceGroup(action, settings){
+    const { name, location, tags } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.createResourceGroup({
+        name: parsers.string(name),
+        location: parsers.autocomplete(location),
+        tags: parsers.tags(tags)
+    });
 }
 
-function createResourceGroup (action, settings) {
-    return _getWebSiteManagementClient(settings).then(RMClient=>{
-        let resourceGroupName = action.params.resourceGroupName
-        let groupParameters = action.params.parameters
-        return RMClient.resourceGroups.createOrUpdate(resourceGroupName, groupParameters);
-    })
+async function createStorageAccount(action, settings){
+    const { resourceGroup, name, kind, accessTier, location, sku, tags } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.createStorageAccount({
+        resourceGroup: parsers.autocomplete(resourceGroup),
+        name: parsers.string(name),
+        location: parsers.autocomplete(location),
+        sku: parsers.autocomplete(sku),
+        tags: parsers.tags(tags),
+        kind, accessTier
+    });
 }
 
-function createStorageAccount (action, settings){
-    return _getWebSiteManagementClient(settings).then(RMClient=>{
-        let resourceGroupName = action.params.resourceGroupName
-        let storageAccountName = action.params.storageAccountName
-        let createParameters = action.params.parameters
-        return RMClient.createStorageAccount.createOrUpdate(resourceGroupName, storageAccountName, createParameters)
-    })
+async function getResourceGroup(action, settings){
+    const { resourceGroup } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.getResourceGroup({
+        resourceGroup: parsers.autocomplete(resourceGroup)
+    });
 }
 
+async function deleteResourceGroup(action, settings){
+    const { resourceGroup } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.deleteResourceGroup({
+        resourceGroup: parsers.autocomplete(resourceGroup)
+    });
+}
+
+async function getStorageAccount(action, settings){
+    const { resourceGroup, storageAccount } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.getStorageAccount({
+        resourceGroup: parsers.autocomplete(resourceGroup),
+        storageAccount: parsers.autocomplete(storageAccount)
+    });
+}
+
+async function deleteStorageAccount(action, settings){
+    const { resourceGroup, storageAccount } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.deleteStorageAccount({
+        resourceGroup: parsers.autocomplete(resourceGroup),
+        storageAccount: parsers.autocomplete(storageAccount)
+    });
+}
+
+async function listResourceGroups(action, settings){
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.listResourceGroups();
+}
+
+async function listStorageAccounts(action, settings){
+    const { resourceGroup } = action.params;
+    const client = await AzureResourceManagementService.from(action.params, settings);
+    return client.listStorageAccounts({
+        resourceGroup: parsers.autocomplete(resourceGroup)
+    });
+} 
 
 module.exports = {
-    createResourceGroup: createResourceGroup,
-    createStorageAccount: createStorageAccount
+    createResourceGroup,
+	createStorageAccount,
+	getResourceGroup,
+	deleteResourceGroup,
+	getStorageAccount,
+	deleteStorageAccount,
+	listResourceGroups,
+	listStorageAccounts,
+    // Autocomplete Functions
+    ...require("./autocomplete")
 }
