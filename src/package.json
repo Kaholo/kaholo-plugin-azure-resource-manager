@@ -1,17 +1,17 @@
 {
-  "name": "kaholo-plugin-azure-resource-management",
-  "version": "1.0.0",
-  "description": "Kaholo plugin for Azure ARM Template",
-  "main": "app.js",
-  "dependencies": {
-    "@azure/arm-resources": "^2.1.0",
-    "@azure/ms-rest-nodeauth": "^3.0.3",
-    "fs": "0.0.1-security"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Ilan Yaniv",
-  "license": "ISC"
+	"name": "kaholo-plugin-azureresourcemanagement",
+	"version": "2.0.0",
+	"description": "Kaholo plugin for integration with Azure Resource Manager API.",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Kaholo Group(Amit Alon)",
+	"license": "ISC",
+	"dependencies": {
+		"@azure/ms-rest-nodeauth": "^3.1.0",
+		"@azure/arm-resources": "^4.2.2",
+		"@azure/arm-storage": "^16.1.2",
+		"@azure/arm-subscriptions": "^3.1.2"
+	}
 }
