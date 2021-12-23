@@ -5,9 +5,9 @@
   "execProgram": "node",
   "exposeRoute": false,
   "imgUrl": "logo.png",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Kaholo plugin for integration with Azure Resource Management API.",
-  "category": "CLOUDS",
+  "category": "CLOUD",
   "settings": [
     {
       "name": "clientId",
